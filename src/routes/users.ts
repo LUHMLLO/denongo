@@ -1,11 +1,11 @@
 import { Context, Router, Status } from "../../deps.ts";
-import { allUsers, insertUser } from "../models/users.ts";
+import { AllUsers, CreateUser, ReadUser } from "../models/users.ts";
 import { HandleError } from "../utils/handlers.ts";
 
-export function userRoutes(router: Router) {
+export function UserRoutes(router: Router) {
     router.get('/api/user/list', async (context: Context) => {
         try {
-            const userList = await allUsers();
+            const userList = await AllUsers();
             context.response.status = Status.OK;
             context.response.body = { data: userList };
         } catch (error) {
@@ -18,11 +18,28 @@ export function userRoutes(router: Router) {
             const body = context.request.body({ type: "json" });
             const { username, password } = await body.value;
 
-            const insertedUser = await insertUser(username, password);
+            const user = await CreateUser(username, password);
 
             context.response.status = Status.Created;
-            context.response.body = { message: "User created successfully", data: { insertedUser, username, password } };
+            context.response.body = { message: "User created successfully", data: { user, username, password } };
+        } catch (error) {
+            HandleError(error, context);
+        }
+    });
 
+    router.get('/api/user/read/:id', async (context: Context) => {
+        try {
+            const userId = context.params.id;
+
+            const user = await ReadUser(userId);
+
+            if (user) {
+                context.response.status = Status.OK;
+                context.response.body = { data: user };
+            } else {
+                context.response.status = Status.NotFound;
+                context.response.body = { error: 'User not found' };
+            }
         } catch (error) {
             HandleError(error, context);
         }
