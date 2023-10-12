@@ -4,8 +4,8 @@
     [x] - read users
     [x] - read users by id
     [x] - update users by id
-    [_] - delete users by id
+    [x] - delete users by id
 
-    [_] - hash/salt user password
+    [x] - hash/salt user password
     [_] - login user & generate jwt
     [_] - associate user to profile

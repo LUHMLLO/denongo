@@ -1,5 +1,6 @@
 import { ObjectId } from "../../deps.ts";
 import db from "../db.ts";
+import { HashPassword } from "../utils/encrypt.ts";
 
 export interface UserSchema {
     _id: ObjectId;
@@ -7,7 +8,8 @@ export interface UserSchema {
     password: string;
 }
 
-const usersCollection = db.collection<UserSchema>("users");
+export const usersCollection = db.collection<UserSchema>("users");
+
 
 export async function AllUsers(): Promise<UserSchema[]> {
     return await usersCollection.find().toArray()
@@ -16,7 +18,7 @@ export async function AllUsers(): Promise<UserSchema[]> {
 export async function CreateUser(username: string, password: string): Promise<ObjectId> {
     return await usersCollection.insertOne({
         username,
-        password
+        password: await HashPassword(password)
     })
 };
 

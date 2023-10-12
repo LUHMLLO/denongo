@@ -18,10 +18,10 @@ export function UserRoutes(router: Router) {
             const body = context.request.body({ type: "json" });
             const { username, password } = await body.value;
 
-            const user = await CreateUser(username, password);
+            const user = await CreateUser(username, password.trim());
 
             context.response.status = Status.Created;
-            context.response.body = { message: "User created successfully", data: { user, username, password } };
+            context.response.body = { message: "User created successfully", data: user };
         } catch (error) {
             HandleError(error, context);
         }

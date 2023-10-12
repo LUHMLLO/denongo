@@ -1,7 +1,9 @@
 import { Application, Router } from '../deps.ts';
+import { AuthRoutes } from "./routes/auth.ts";
 import { UserRoutes } from "./routes/users.ts";
 
 const router = new Router();
+AuthRoutes(router)
 UserRoutes(router)
 
 const app = new Application();
