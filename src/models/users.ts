@@ -37,4 +37,8 @@ export async function UpdateUser(id: ObjectId, data: Partial<UserSchema>): Promi
     }
 }
 
+export async function DeleteUser(id: ObjectId): Promise<number> {
+    return await usersCollection.deleteOne({ _id: new ObjectId(id) });
+};
+
 

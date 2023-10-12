@@ -1,5 +1,5 @@
 import { Context, ObjectId, Router, Status } from "../../deps.ts";
-import { AllUsers, CreateUser, ReadUser, UpdateUser, UserSchema } from "../models/users.ts";
+import { AllUsers, CreateUser, DeleteUser, ReadUser, UpdateUser, UserSchema } from "../models/users.ts";
 import { HandleError } from "../utils/handlers.ts";
 
 export function UserRoutes(router: Router) {
@@ -61,6 +61,17 @@ export function UserRoutes(router: Router) {
                 context.response.status = Status.NotFound;
                 context.response.body = { error: 'User not found' };
             }
+        } catch (error) {
+            HandleError(error, context);
+        }
+    });
+
+    router.delete('/api/user/delete/:id', async (context: Context) => {
+        try {
+            const userId: ObjectId = context.params.id;
+            await DeleteUser(userId);
+            context.response.status = Status.OK;
+            context.response.body = { message: `Deleted user ${userId}` };
         } catch (error) {
             HandleError(error, context);
         }
