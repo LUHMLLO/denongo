@@ -23,3 +23,18 @@ export async function CreateUser(username: string, password: string): Promise<Ob
 export async function ReadUser(id: ObjectId): Promise<UserSchema | undefined> {
     return await usersCollection.findOne({ _id: new ObjectId(id) });
 };
+
+export async function UpdateUser(id: ObjectId, data: Partial<UserSchema>): Promise<unknown | undefined> {
+    const result = await usersCollection.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: data as Partial<UserSchema> }
+    );
+
+    if (result.modifiedCount === 1) {
+        return ReadUser(id);
+    } else {
+        return undefined;
+    }
+}
+
+

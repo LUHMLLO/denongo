@@ -3,7 +3,7 @@
     [x] - create users
     [x] - read users
     [x] - read users by id
-    [_] - update users by id
+    [x] - update users by id
     [_] - delete users by id
 
     [_] - hash/salt user password
