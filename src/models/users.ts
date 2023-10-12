@@ -1,13 +1,12 @@
-import { MongoClient, ObjectId } from "./_deps.ts";
-import { UserSchema } from "./_models.ts";
+import { ObjectId } from "../../deps.ts";
+import db from "../db.ts";
 
-const client = new MongoClient();
+export interface UserSchema {
+    _id: ObjectId;
+    username: string;
+    password: string;
+}
 
-await client.connect(
-    "mongodb+srv://luhmllo06:wbJxjL5FLuPgxvbC@lab001.1nxvejt.mongodb.net/denolabs?authMechanism=SCRAM-SHA-1"
-);
-
-const db = client.database("deno_lab");
 const usersCollection = db.collection<UserSchema>("users");
 
 export async function allUsers(): Promise<UserSchema[]> {
