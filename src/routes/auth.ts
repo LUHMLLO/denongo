@@ -1,10 +1,27 @@
-// auth.ts
 import { Context, Router, Status } from "../../deps.ts";
 import { Login } from "../models/auth.ts";
+import { CreateUser } from "../models/users.ts";
 import { HandleError } from "../utils/handlers.ts";
-import { CreateJWT, VerifyJWT } from "../utils/jwt.ts";
+import { ProtectRoute } from "../utils/jwt.middleware.ts";
+import { CreateJWT } from "../utils/jwt.ts";
 
 export function AuthRoutes(router: Router) {
+
+    router.post('/api/signup', async (context: Context) => {
+        try {
+            const body = context.request.body({ type: "json" });
+            const { username, password } = await body.value;
+
+            const data = await CreateUser(username, password.trim());
+
+            if (data) {
+                context.response.status = Status.OK;
+                context.response.body = { message: "User created", data: data };
+            }
+        } catch (error) {
+            HandleError(error, context);
+        }
+    });
 
     router.post('/api/login', async (context: Context) => {
         try {
@@ -22,24 +39,10 @@ export function AuthRoutes(router: Router) {
         }
     });
 
-    router.get('/api/verify', async (context: Context) => {
+    router.get('/api/verify', ProtectRoute, (context: Context) => {
         try {
-            const headers = context.request.headers;
-            const authHeader = headers.get("Authorization");
-
-            if (!authHeader || !authHeader.startsWith("Bearer ")) {
-                context.response.status = Status.Unauthorized;
-                context.response.body = { message: "Invalid or missing Authorization header" };
-                return;
-            }
-
-            const token = authHeader.replace("Bearer ", "").trim();
-
-            const payload = await VerifyJWT(token);
-
             context.response.status = Status.OK;
-            context.response.body = { message: "Token verified", payload: payload };
-
+            context.response.body = { message: "Token verified", authorization: context.state.token };
         } catch (error) {
             HandleError(error, context);
         }

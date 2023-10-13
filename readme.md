@@ -8,4 +8,5 @@
 
     [x] - hash/salt user password
     [x] - login user & generate jwt
+    [x] - required jwt for all protected routes
     [_] - associate user to profile

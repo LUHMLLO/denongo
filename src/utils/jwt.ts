@@ -1,4 +1,4 @@
-import { Payload, create, verify } from "https://deno.land/x/djwt@v2.9.1/mod.ts";
+import { Payload, create, verify } from "../../deps.ts";
 
 const keyPromise = crypto.subtle.generateKey(
     { name: "HMAC", hash: "SHA-512" },

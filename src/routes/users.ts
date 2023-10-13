@@ -1,9 +1,10 @@
 import { Context, ObjectId, Router, Status } from "../../deps.ts";
 import { AllUsers, CreateUser, DeleteUser, ReadUser, UpdateUser, UserSchema } from "../models/users.ts";
 import { HandleError } from "../utils/handlers.ts";
+import { ProtectRoute } from "../utils/jwt.middleware.ts";
 
 export function UserRoutes(router: Router) {
-    router.get('/api/user/list', async (context: Context) => {
+    router.get('/api/user/list', ProtectRoute, async (context: Context) => {
         try {
             const userList = await AllUsers();
             context.response.status = Status.OK;
@@ -13,7 +14,7 @@ export function UserRoutes(router: Router) {
         }
     });
 
-    router.post('/api/user/create', async (context: Context) => {
+    router.post('/api/user/create', ProtectRoute, async (context: Context) => {
         try {
             const body = context.request.body({ type: "json" });
             const { username, password } = await body.value;
@@ -27,7 +28,7 @@ export function UserRoutes(router: Router) {
         }
     });
 
-    router.get('/api/user/read/:id', async (context: Context) => {
+    router.get('/api/user/read/:id', ProtectRoute, async (context: Context) => {
         try {
             const userId: ObjectId = context.params.id;
 
@@ -45,7 +46,7 @@ export function UserRoutes(router: Router) {
         }
     });
 
-    router.patch('/api/user/update/:id', async (context: Context) => {
+    router.patch('/api/user/update/:id', ProtectRoute, async (context: Context) => {
         try {
             const userId: ObjectId = context.params.id;
 
@@ -66,7 +67,7 @@ export function UserRoutes(router: Router) {
         }
     });
 
-    router.delete('/api/user/delete/:id', async (context: Context) => {
+    router.delete('/api/user/delete/:id', ProtectRoute, async (context: Context) => {
         try {
             const userId: ObjectId = context.params.id;
             await DeleteUser(userId);
