@@ -10,37 +10,58 @@ export interface UserSchema {
 
 export const usersCollection = db.collection<UserSchema>("users");
 
+export async function AllUsers(): Promise<UserSchema[] | Error> {
+    const list = await usersCollection.find().toArray()
 
-export async function AllUsers(): Promise<UserSchema[]> {
-    return await usersCollection.find().toArray()
+    if (list.length <= 0) {
+        return Error('No Users Where Found')
+    }
+
+    return list;
 };
 
-export async function CreateUser(username: string, password: string): Promise<ObjectId> {
-    return await usersCollection.insertOne({
-        username,
-        password: await HashPassword(password)
-    })
+export async function CreateUser(username: string, password: string): Promise<ObjectId | Error> {
+    const user = await usersCollection.findOne({ username: username });
+
+    if (!user) {
+        return await usersCollection.insertOne({
+            username,
+            password: await HashPassword(password)
+        })
+    }
+
+    return Error('User already exists')
 };
 
-export async function ReadUser(id: ObjectId): Promise<UserSchema | undefined> {
-    return await usersCollection.findOne({ _id: new ObjectId(id) });
+export async function ReadUser(id: ObjectId): Promise<UserSchema | Error> {
+    const user = await usersCollection.findOne({ _id: new ObjectId(id) })
+
+    if (!user) {
+        return Error('User not found')
+    }
+
+    return user;
 };
 
-export async function UpdateUser(id: ObjectId, data: Partial<UserSchema>): Promise<unknown | undefined> {
+export async function UpdateUser(data: UserSchema): Promise<unknown> {
     const result = await usersCollection.updateOne(
-        { _id: new ObjectId(id) },
-        { $set: data as Partial<UserSchema> }
+        { _id: new ObjectId(data._id) },
+        { $set: data }
     );
 
     if (result.modifiedCount === 1) {
-        return ReadUser(id);
+        return ReadUser(data._id);
     } else {
-        return undefined;
+        return Error('User was not updated');
     }
 }
 
-export async function DeleteUser(id: ObjectId): Promise<number> {
-    return await usersCollection.deleteOne({ _id: new ObjectId(id) });
+export async function DeleteUser(id: ObjectId): Promise<number | Error> {
+    const result = await usersCollection.deleteOne({ _id: new ObjectId(id) });
+
+    if (!result) {
+        return Error('Cannot delete user');
+    }
+
+    return result;
 };
-
-

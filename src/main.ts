@@ -1,10 +1,12 @@
 import { Application, Router, oakCors } from '../deps.ts';
 import { AuthRoutes } from "./routes/auth.ts";
+import { ProfileRoutes } from "./routes/profiles.ts";
 import { UserRoutes } from "./routes/users.ts";
 
 const router = new Router();
 AuthRoutes(router)
 UserRoutes(router)
+ProfileRoutes(router)
 
 const app = new Application();
 app.use(oakCors());

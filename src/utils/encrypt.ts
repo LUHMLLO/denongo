@@ -14,10 +14,5 @@ export async function HashPassword(password: string): Promise<string> {
 }
 
 export async function VerifyPassword(plain: string, previouslyHashed: string): Promise<boolean> {
-    try {
-        return await bcrypt.compare(plain, previouslyHashed);
-    } catch (error) {
-        console.error("Error verifying password:", error);
-        throw error;
-    }
+    return await bcrypt.compare(plain, previouslyHashed);
 }
