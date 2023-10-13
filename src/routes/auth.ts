@@ -1,6 +1,6 @@
 import { Context, Router, Status } from "../../deps.ts";
 import { Login } from "../models/auth.ts";
-import { CreateUser } from "../models/users.ts";
+import { CreateUser, ReadUser } from "../models/users.ts";
 import { HandleError } from "../utils/handlers.ts";
 import { ProtectRoute } from "../utils/jwt.middleware.ts";
 import { CreateJWT } from "../utils/jwt.ts";
@@ -39,10 +39,11 @@ export function AuthRoutes(router: Router) {
         }
     });
 
-    router.get('/api/verify', ProtectRoute, (context: Context) => {
+    router.get('/api/profile', ProtectRoute, async (context: Context) => {
         try {
+            const user = await ReadUser(context.state.token.data)
             context.response.status = Status.OK;
-            context.response.body = { message: "Token verified", authorization: context.state.token };
+            context.response.body = { data: user };
         } catch (error) {
             HandleError(error, context);
         }
