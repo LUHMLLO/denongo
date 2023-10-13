@@ -1,14 +1,21 @@
-import { create, verify } from "https://deno.land/x/djwt@v2.9.1/mod.ts";
+import { Payload, create, verify } from "https://deno.land/x/djwt@v2.9.1/mod.ts";
 
-(async () => {
-    const key = await crypto.subtle.generateKey(
-        { name: "HMAC", hash: "SHA-512" },
-        true,
-        ["sign", "verify"]
-    );
+const keyPromise = crypto.subtle.generateKey(
+    { name: "HMAC", hash: "SHA-512" },
+    true,
+    ["sign", "verify"]
+) as Promise<CryptoKey>;
 
-    const jwt = create({ alg: "HS512", typ: "JWT" }, { data: "secret" }, key);
-    const payload = await verify(await jwt, key);
+export async function GenerateKey(): Promise<CryptoKey> {
+    return await keyPromise;
+}
 
-    console.log(payload);
-})();
+export async function CreateJWT(payload: unknown): Promise<string> {
+    const key = await GenerateKey();
+    return await create({ alg: "HS512", typ: "JWT" }, { data: payload }, key);
+}
+
+export async function VerifyJWT(jwt: string): Promise<Payload> {
+    const key = await GenerateKey();
+    return await verify(jwt, key);
+}

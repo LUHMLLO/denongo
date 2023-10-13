@@ -1,9 +1,7 @@
 import { bcrypt } from "../../deps.ts";
 
-// const secret = 'the secret key must remain a secret'
-
 export async function Salt() {
-    return await bcrypt.genSalt(16);
+    return await bcrypt.genSalt(8);
 }
 
 export async function HashPassword(password: string): Promise<string> {

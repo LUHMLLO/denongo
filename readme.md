@@ -7,5 +7,5 @@
     [x] - delete users by id
 
     [x] - hash/salt user password
-    [_] - login user & generate jwt
+    [x] - login user & generate jwt
     [_] - associate user to profile
