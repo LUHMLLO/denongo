@@ -1,4 +1,4 @@
-import { Application, Router } from '../deps.ts';
+import { Application, Router, oakCors } from '../deps.ts';
 import { AuthRoutes } from "./routes/auth.ts";
 import { UserRoutes } from "./routes/users.ts";
 
@@ -7,6 +7,7 @@ AuthRoutes(router)
 UserRoutes(router)
 
 const app = new Application();
+app.use(oakCors());
 
 app.use(async (ctx, next) => {
     await next();

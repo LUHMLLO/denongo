@@ -71,7 +71,7 @@ export function UserRoutes(router: Router) {
         try {
             const userId: ObjectId = context.params.id;
             await DeleteUser(userId);
-            context.response.status = Status.OK;
+            context.response.status = Status.NoContent;
             context.response.body = { message: `Deleted user ${userId}` };
         } catch (error) {
             HandleError(error, context);

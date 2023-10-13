@@ -15,8 +15,8 @@ export function AuthRoutes(router: Router) {
             const data = await CreateUser(username, password.trim());
 
             if (data) {
-                context.response.status = Status.OK;
-                context.response.body = { message: "User created", data: data };
+                context.response.status = Status.Created;
+                context.response.body = { message: "User created successfully" };
             }
         } catch (error) {
             HandleError(error, context);
@@ -31,8 +31,8 @@ export function AuthRoutes(router: Router) {
             const data = await Login(username, password.trim());
 
             if (data) {
-                context.response.status = Status.OK;
-                context.response.body = { message: "User logged in", data: data._id, token: await CreateJWT(data._id) };
+                context.response.status = Status.Created;
+                context.response.body = { message: "User logged in", token: await CreateJWT(data._id) };
             }
         } catch (error) {
             HandleError(error, context);
