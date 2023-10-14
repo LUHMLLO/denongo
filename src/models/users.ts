@@ -43,7 +43,7 @@ export async function ReadUser(id: ObjectId): Promise<UserSchema | Error> {
     return user;
 };
 
-export async function UpdateUser(data: UserSchema): Promise<unknown> {
+export async function UpdateUser(data: UserSchema): Promise<UserSchema | Error> {
     const result = await usersCollection.updateOne(
         { _id: new ObjectId(data._id) },
         { $set: data }

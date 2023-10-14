@@ -1,21 +1,27 @@
-import { Payload, create, verify } from "../../deps.ts";
+import { Payload, create, load, verify } from "../../deps.ts";
 
-const keyPromise = crypto.subtle.generateKey(
-    { name: "HMAC", hash: "SHA-512" },
-    true,
-    ["sign", "verify"]
-) as Promise<CryptoKey>;
+const env = await load();
+const SECRET_KEY = env["SECRET_KEY"];
 
-export async function GenerateKey(): Promise<CryptoKey> {
-    return await keyPromise;
+if (!SECRET_KEY) {
+    throw new Error("No Token Decoder Was Found");
 }
 
+const encoder = new TextEncoder();
+const keyData = encoder.encode(SECRET_KEY);
+
+const algorithm = { name: "HMAC", hash: "SHA-512" };
+const key = await crypto.subtle.importKey("raw", keyData, algorithm, false, ["sign", "verify"]);
+
 export async function CreateJWT(payload: unknown): Promise<string> {
-    const key = await GenerateKey();
     return await create({ alg: "HS512", typ: "JWT" }, { data: payload }, key);
 }
 
-export async function VerifyJWT(jwt: string): Promise<Payload> {
-    const key = await GenerateKey();
-    return await verify(jwt, key);
+export async function VerifyJWT(jwt: string): Promise<Payload | Error> {
+    try {
+        return await verify(jwt, key)
+    } catch (error) {
+        // console.error(error)
+        return Error(error);
+    }
 }

@@ -1,0 +1,28 @@
+{
+    "compilerOptions": {
+        "lib": [
+            "deno.window"
+        ],
+        "strict": true
+    },
+    "lint": {
+        "include": [
+            "src/"
+        ],
+        "exclude": [],
+        "rules": {
+            "tags": [
+                "recommended"
+            ],
+            "include": [
+                "ban-untagged-todo"
+            ],
+            "exclude": [
+                "no-unused-vars"
+            ]
+        }
+    },
+    "tasks": {
+        "start": "deno run --allow-net --allow-write --allow-read --unstable src/main.ts"
+    }
+}

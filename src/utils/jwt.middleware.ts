@@ -19,9 +19,9 @@ export async function ProtectRoute(
         const token = authHeader.replace("Bearer ", "").trim();
         const payload = await VerifyJWT(token);
 
-        if (!payload) {
+        if (payload instanceof Error) {
             context.response.status = Status.Unauthorized;
-            context.response.body = { message: "Invalid or Unauthorized Bearer" };
+            context.response.body = { message: payload.message };
             return;
         }
 
