@@ -41,12 +41,13 @@ export function UserRoutes(router: Router) {
 
     router.get('/api/user/read/:id', ProtectRoute, async (context: Context) => {
         try {
-            const userId: ObjectId = context.params.id;
+            const userId: ObjectId = new ObjectId(context.params.id);
+
             const user = await ReadUser(userId);
 
             if (user instanceof Error) {
                 context.response.status = Status.NotFound;
-                context.response.body = { error: 'User not found' };
+                context.response.body = { error: user.message };
                 return;
             }
 
@@ -59,13 +60,16 @@ export function UserRoutes(router: Router) {
 
     router.patch('/api/user/update/:id', ProtectRoute, async (context: Context) => {
         try {
-            const userId: ObjectId = context.params.id;
+            const userId: ObjectId = new ObjectId(context.params.id);
+
             const data = await context.request.body({ type: "json" }).value
+
             const user = await UpdateUser({ ...data, _id: userId });
 
             if (user instanceof Error) {
                 context.response.status = Status.NotFound;
                 context.response.body = { error: user.message };
+                return;
             }
 
             context.response.status = Status.OK;
@@ -77,7 +81,8 @@ export function UserRoutes(router: Router) {
 
     router.delete('/api/user/delete/:id', ProtectRoute, async (context: Context) => {
         try {
-            const userId: ObjectId = context.params.id;
+            const userId: ObjectId = new ObjectId(context.params.id);
+
             const result = await DeleteUser(userId);
 
             if (result instanceof Error) {

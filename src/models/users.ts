@@ -49,11 +49,11 @@ export async function UpdateUser(data: UserSchema): Promise<UserSchema | Error> 
         { $set: data }
     );
 
-    if (result.modifiedCount === 1) {
-        return ReadUser(data._id);
-    } else {
-        return Error('User was not updated');
+    if (result.modifiedCount != 0) {
+        return await ReadUser(data._id);
     }
+
+    return Error('User was not updated');
 }
 
 export async function DeleteUser(id: ObjectId): Promise<number | Error> {

@@ -35,7 +35,7 @@ export function ProfileRoutes(router: Router) {
 
     router.get('/api/profile/read/:id', ProtectRoute, async (context: Context) => {
         try {
-            const userId: ObjectId = context.params.id;
+            const userId: ObjectId = new ObjectId(context.params.id);
 
             const user = await ReadProfile(userId);
 
@@ -53,7 +53,7 @@ export function ProfileRoutes(router: Router) {
 
     router.patch('/api/profile/update/:id', ProtectRoute, async (context: Context) => {
         try {
-            const userId: ObjectId = context.params.id;
+            const userId: ObjectId = new ObjectId(context.params.id);
 
             const body = context.request.body({ type: "json" });
             const data = await body.value as Partial<ProfileSchema>
@@ -74,7 +74,7 @@ export function ProfileRoutes(router: Router) {
 
     router.delete('/api/profile/delete/:id', ProtectRoute, async (context: Context) => {
         try {
-            const userId: ObjectId = context.params.id;
+            const userId: ObjectId = new ObjectId(context.params.id);
             await DeleteProfile(userId);
             context.response.status = Status.NoContent;
             context.response.body = { message: `Deleted user ${userId}` };
