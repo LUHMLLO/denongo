@@ -30,15 +30,10 @@ export async function CreateUser(username: string, password: string): Promise<Ob
 export async function ReadUser(id: ObjectId): Promise<UserSchema | Error> {
   const record = await usersCollection.findOne({ _id: new ObjectId(id) });
 
-  if (!record) {
-    return Error("Invalid reference");
-  }
-
-  return record;
+  return record ? record : Error("Invalid reference");
 }
 
 export async function UpdateUser(data: UserSchema): Promise<UserSchema | Error> {
-
   const record = await ReadUser(data._id)
 
   if (record instanceof Error) {
@@ -50,11 +45,7 @@ export async function UpdateUser(data: UserSchema): Promise<UserSchema | Error> 
     { $set: data },
   );
 
-  if (result.modifiedCount != 0) {
-    return await ReadUser(record._id);
-  }
-
-  return Error("No change was detected");
+  return result.modifiedCount !== 0 ? await ReadUser(record._id) : Error("No change was detected");
 }
 
 export async function DeleteUser(id: ObjectId): Promise<number> {
