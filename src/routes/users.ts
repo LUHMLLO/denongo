@@ -1,101 +1,96 @@
-import { Context, ObjectId, Router, Status } from "../../deps.ts";
-import { AllUsers, CreateUser, DeleteUser, ReadUser, UpdateUser } from "../models/users.ts";
-import { HandleError } from "../utils/handlers.ts";
-import { ProtectRoute } from "../utils/jwt.middleware.ts";
+import { Context, ObjectId, Router, Status } from "@/deps.ts";
+import { AllUsers, CreateUser, DeleteUser, ReadUser, UpdateUser, UserSchema } from "@/models/users.ts";
+import { handleResponseError, handleResponseSuccess, handleTryCatchError } from "@/utils/handlers.ts";
+import { ProtectRoute } from "@/utils/jwt.middleware.ts";
 
 export function UserRoutes(router: Router) {
-    router.get('/api/user/list', ProtectRoute, async (context: Context) => {
-        try {
-            const userList = await AllUsers();
+  router.get("/api/user/list", ProtectRoute, async (context: Context) => {
+    try {
+      const mongoResponse = await AllUsers();
 
-            if (userList instanceof Error) {
-                context.response.status = Status.NoContent;
-                context.response.body = { data: userList.message };
-                return;
-            }
+      if (mongoResponse.length <= 0) {
+        handleResponseSuccess(context, Status.OK, "Records list is empty", mongoResponse);
+        return;
+      }
 
-            context.response.status = Status.OK;
-            context.response.body = { data: userList };
-        } catch (error) {
-            HandleError(error, context);
-        }
-    });
+      handleResponseSuccess(context, Status.OK, `Obtained records list`, mongoResponse);
+    } catch (error) {
+      handleTryCatchError(error, context);
+    }
+  });
 
-    router.post('/api/user/create', ProtectRoute, async (context: Context) => {
-        try {
-            const { username, password } = await context.request.body({ type: "json" }).value;
-            const data = await CreateUser(username, password.trim());
+  router.post("/api/user/create", ProtectRoute, async (context: Context) => {
+    try {
+      const data: UserSchema = await context.request.body({ type: "json" }).value;
 
-            if (data instanceof Error) {
-                context.response.status = Status.BadRequest;
-                context.response.body = { message: data.message };
-                return;
-            }
+      const mongoResponse = await CreateUser(data.username, data.password.trim());
 
-            context.response.status = Status.Created;
-            context.response.body = { message: "User created successfully", data: data };
-        } catch (error) {
-            HandleError(error, context);
-        }
-    });
+      if (mongoResponse instanceof Error) {
+        handleResponseError(context, Status.BadRequest, "Cannot create record", mongoResponse.message);
+        return;
+      }
 
-    router.get('/api/user/read/:id', ProtectRoute, async (context: Context) => {
-        try {
-            const userId: ObjectId = new ObjectId(context.params.id);
+      handleResponseSuccess(context, Status.Created, `Created record`, mongoResponse);
+    } catch (error) {
+      handleTryCatchError(error, context);
+    }
+  });
 
-            const user = await ReadUser(userId);
+  router.get("/api/user/read/:id", ProtectRoute, async (context: Context) => {
+    try {
+      // deno-lint-ignore no-explicit-any
+      const userId: ObjectId = new ObjectId(await (context as any).params.id);
 
-            if (user instanceof Error) {
-                context.response.status = Status.NotFound;
-                context.response.body = { error: user.message };
-                return;
-            }
+      const mongoResponse = await ReadUser(userId);
 
-            context.response.status = Status.OK;
-            context.response.body = { data: user };
-        } catch (error) {
-            HandleError(error, context);
-        }
-    });
+      if (mongoResponse instanceof Error) {
+        handleResponseError(context, Status.NotFound, "No record was found", mongoResponse.message);
+        return;
+      }
 
-    router.patch('/api/user/update/:id', ProtectRoute, async (context: Context) => {
-        try {
-            const userId: ObjectId = new ObjectId(context.params.id);
+      handleResponseSuccess(context, Status.OK, `Obtained record`, mongoResponse);
+    } catch (error) {
+      handleTryCatchError(error, context);
+    }
+  });
 
-            const data = await context.request.body({ type: "json" }).value
+  router.patch("/api/user/update/:id", ProtectRoute, async (context: Context) => {
+    try {
+      // deno-lint-ignore no-explicit-any
+      const userId: ObjectId = new ObjectId(await (context as any).params.id);
 
-            const user = await UpdateUser({ ...data, _id: userId });
+      const data: UserSchema = await context.request.body({ type: "json" }).value;
 
-            if (user instanceof Error) {
-                context.response.status = Status.NotFound;
-                context.response.body = { error: user.message };
-                return;
-            }
+      const mongoResponse = await UpdateUser({ ...data, _id: userId });
 
-            context.response.status = Status.OK;
-            context.response.body = { message: 'Updated successfully', data: user };
-        } catch (error) {
-            HandleError(error, context);
-        }
-    });
+      if (mongoResponse instanceof Error) {
+        handleResponseError(context, Status.BadRequest, "Cannot update record", mongoResponse.message);
+        return;
+      }
 
-    router.delete('/api/user/delete/:id', ProtectRoute, async (context: Context) => {
-        try {
-            const userId: ObjectId = new ObjectId(context.params.id);
+      handleResponseSuccess(context, Status.OK, "Updated record", mongoResponse);
+    } catch (error) {
+      handleTryCatchError(error, context);
+    }
+  },
+  );
 
-            const result = await DeleteUser(userId);
+  router.delete("/api/user/delete/:id", ProtectRoute, async (context: Context) => {
+    try {
+      // deno-lint-ignore no-explicit-any
+      const userId: ObjectId = new ObjectId(await (context as any).params.id);
 
-            if (result instanceof Error) {
-                context.response.status = Status.NoContent;
-                context.response.body = { message: result.message };
-                return;
-            }
+      const mongoResponse = await DeleteUser(userId);
 
-            context.response.status = Status.NoContent;
-            context.response.body = { message: `Deleted user ${userId}` };
-        } catch (error) {
-            HandleError(error, context);
-        }
-    });
+      if (mongoResponse === 0) {
+        handleResponseError(context, Status.NotFound, "Cannot delete record", "Record Not Found");
+        return;
+      }
 
+      handleResponseSuccess(context, Status.Accepted, `Deleted record ${userId}`);
+    } catch (error) {
+      handleTryCatchError(error, context);
+    }
+  },
+  );
 }
