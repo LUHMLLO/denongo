@@ -1,32 +1,26 @@
 import { Context, Status } from "@/deps.ts";
 
-export function handleTryCatchError(error: Error, context: Context): void {
-  context.response.status = Status.InternalServerError;
-  context.response.body = {
-    error: {
-      message: error.message,
-      status: Status.InternalServerError,
-    },
-  };
-}
-
-export function handleResponseError(context: Context, status: number, message: string | string[]): void {
-  context.response.status = status;
-  context.response.body = {
-    error: {
-      message: message,
-      status: status,
-    },
-  };
-}
-
 export function handleResponseSuccess(context: Context, status: number, message: string, data?: unknown): void {
   context.response.status = status;
   context.response.body = {
-    success: {
+    payload: {
       message: message,
       status: status,
       data: data,
     },
   };
+}
+
+export function handleResponseError(context: Context, status: number, message: string): void {
+  context.response.status = status;
+  context.response.body = {
+    payload: {
+      message: message.replace("Error: ", "").trim(),
+      status: status,
+    },
+  };
+}
+
+export function handleTryCatchError(error: Error, context: Context): void {
+  handleResponseError(context, Status.InternalServerError, error.message.replace("Error: ", "").trim());
 }

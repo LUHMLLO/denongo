@@ -4,25 +4,21 @@ import { VerifyJWT } from "@/utils/jwt.ts";
 
 export async function ProtectRoute(context: Context, next: () => Promise<unknown>): Promise<void> {
   try {
-    const headers = context.request.headers;
-    const authHeader = headers.get("Authorization");
+    const authHeader = context.request.headers.get("Authorization");
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      handleResponseError(context, Status.Unauthorized, 'Invalid or missing Authorization Header')
-      return;
+      return handleResponseError(context, Status.Unauthorized, 'Invalid or missing Authorization Header');
     }
 
-    const token = authHeader.replace("Bearer ", "").trim();
-    const payload = await VerifyJWT(token);
+    const payload = await VerifyJWT(authHeader.replace("Bearer ", "").trim());
 
     if (payload instanceof Error) {
-      handleResponseError(context, Status.Unauthorized, payload.message.replace("Error: ", "").trim())
-      return;
+      return handleResponseError(context, Status.Unauthorized, payload.message);
     }
 
     context.state.token = payload;
     await next();
   } catch (error) {
-    handleTryCatchError(error, context);
+    return handleTryCatchError(error, context);
   }
 }

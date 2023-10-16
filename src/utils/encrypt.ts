@@ -1,6 +1,6 @@
 import { bcrypt } from "@/deps.ts";
 
-export async function Salt() {
+export async function Salt(): Promise<string> {
   return await bcrypt.genSalt(8);
 }
 

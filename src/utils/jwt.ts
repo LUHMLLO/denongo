@@ -1,17 +1,13 @@
 import { create, load, Payload, verify } from "@/deps.ts";
 
-const env = await load();
-const SECRET_KEY = env["SECRET_KEY"];
+const SECRET_KEY = (await load())["SECRET_KEY"];
 
 if (!SECRET_KEY) {
   throw new Error("No Token Decoder Was Found");
 }
 
-const encoder = new TextEncoder();
-const keyData = encoder.encode(SECRET_KEY);
-
 const algorithm = { name: "HMAC", hash: "SHA-512" };
-const key = await crypto.subtle.importKey("raw", keyData, algorithm, false, ["sign", "verify"]);
+const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(SECRET_KEY), algorithm, false, ["sign", "verify"]);
 
 export async function CreateJWT(payload: unknown): Promise<string> {
   return await create({ alg: "HS512", typ: "JWT" }, { data: payload }, key);
