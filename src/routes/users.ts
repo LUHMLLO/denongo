@@ -26,7 +26,7 @@ export function UserRoutes(router: Router) {
       const mongoResponse = await CreateUser(data.username, data.password.trim());
 
       if (mongoResponse instanceof Error) {
-        handleResponseError(context, Status.BadRequest, "Cannot create record", mongoResponse.message);
+        handleResponseError(context, Status.BadRequest, mongoResponse.message);
         return;
       }
 
@@ -39,12 +39,12 @@ export function UserRoutes(router: Router) {
   router.get("/api/user/read/:id", ProtectRoute, async (context: Context) => {
     try {
       // deno-lint-ignore no-explicit-any
-      const userId: ObjectId = new ObjectId(await (context as any).params.id);
+      const paramId: ObjectId = new ObjectId(await (context as any).params.id);
 
-      const mongoResponse = await ReadUser(userId);
+      const mongoResponse = await ReadUser(paramId);
 
       if (mongoResponse instanceof Error) {
-        handleResponseError(context, Status.NotFound, "No record was found", mongoResponse.message);
+        handleResponseError(context, Status.NotFound, mongoResponse.message);
         return;
       }
 
@@ -57,14 +57,14 @@ export function UserRoutes(router: Router) {
   router.patch("/api/user/update/:id", ProtectRoute, async (context: Context) => {
     try {
       // deno-lint-ignore no-explicit-any
-      const userId: ObjectId = new ObjectId(await (context as any).params.id);
+      const paramId: ObjectId = new ObjectId(await (context as any).params.id);
 
       const data: UserSchema = await context.request.body({ type: "json" }).value;
 
-      const mongoResponse = await UpdateUser({ ...data, _id: userId });
+      const mongoResponse = await UpdateUser({ ...data, _id: paramId });
 
       if (mongoResponse instanceof Error) {
-        handleResponseError(context, Status.BadRequest, "Cannot update record", mongoResponse.message);
+        handleResponseError(context, Status.BadRequest, mongoResponse.message);
         return;
       }
 
@@ -78,16 +78,16 @@ export function UserRoutes(router: Router) {
   router.delete("/api/user/delete/:id", ProtectRoute, async (context: Context) => {
     try {
       // deno-lint-ignore no-explicit-any
-      const userId: ObjectId = new ObjectId(await (context as any).params.id);
+      const paramId: ObjectId = new ObjectId(await (context as any).params.id);
 
-      const mongoResponse = await DeleteUser(userId);
+      const mongoResponse = await DeleteUser(paramId);
 
       if (mongoResponse === 0) {
-        handleResponseError(context, Status.NotFound, "Cannot delete record", "Record Not Found");
+        handleResponseError(context, Status.NotFound, "Cannot delete record");
         return;
       }
 
-      handleResponseSuccess(context, Status.Accepted, `Deleted record ${userId}`);
+      handleResponseSuccess(context, Status.Accepted, `Deleted record ${paramId}`);
     } catch (error) {
       handleTryCatchError(error, context);
     }

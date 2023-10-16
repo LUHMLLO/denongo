@@ -10,13 +10,12 @@ export function handleTryCatchError(error: Error, context: Context): void {
   };
 }
 
-export function handleResponseError(context: Context, status: number, message: string, errors: string | string[]): void {
+export function handleResponseError(context: Context, status: number, message: string | string[]): void {
   context.response.status = status;
   context.response.body = {
     error: {
       message: message,
       status: status,
-      errors: errors,
     },
   };
 }
