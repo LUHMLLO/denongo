@@ -7,7 +7,6 @@ AuthRoutes(router);
 UserRoutes(router);
 
 const app = new Application();
-app.use(oakCors());
 
 app.use(async (ctx, next) => {
   await next();
@@ -22,6 +21,7 @@ app.use(async (ctx, next) => {
   ctx.response.headers.set("X-Response-Time", `${ms}ms`);
 });
 
+app.use(oakCors());
 app.use(router.routes());
 app.use(router.allowedMethods());
 
