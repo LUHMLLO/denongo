@@ -1,9 +1,10 @@
 import { Context, Router, Status } from "@/deps.ts";
 import { Login } from "@models/auth.ts";
-import { CreateUser, ReadUser } from "@models/users.ts";
+import { CreateUser } from "@models/users.ts";
 import { handleResponseError, handleResponseSuccess, handleTryCatchError } from "@utils/handlers.ts";
 import { ProtectRoute } from "@utils/jwt.middleware.ts";
 import { CreateJWT } from "@utils/jwt.ts";
+import { ProfilesCollection } from "@models/profiles.ts";
 
 export function AuthRoutes(router: Router) {
   router.post("/api/signup", async (context: Context) => {
@@ -40,7 +41,7 @@ export function AuthRoutes(router: Router) {
 
   router.get("/api/profile", ProtectRoute, async (context: Context) => {
     try {
-      const record = await ReadUser(context.state.token.data);
+      const record = await ProfilesCollection.findOne({ _userID: await context.state.token.data });
 
       if (record instanceof Error) {
         return handleResponseError(context, Status.BadRequest, record.message)

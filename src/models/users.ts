@@ -8,17 +8,17 @@ export interface UserSchema {
   password: string;
 }
 
-export const usersCollection = db.collection<UserSchema>("users");
+export const UsersCollection = db.collection<UserSchema>("users");
 
 export async function AllUsers(): Promise<UserSchema[]> {
-  return await usersCollection.find({}, { projection: { password: 0 } }).toArray();
+  return await UsersCollection.find({}, { projection: { password: 0 } }).toArray();
 }
 
 export async function CreateUser(username: string, password: string): Promise<ObjectId | Error> {
-  const record = await usersCollection.findOne({ username: username });
+  const record = await UsersCollection.findOne({ username: username });
 
   if (!record) {
-    return await usersCollection.insertOne({
+    return await UsersCollection.insertOne({
       username,
       password: await HashPassword(password),
     });
@@ -28,7 +28,7 @@ export async function CreateUser(username: string, password: string): Promise<Ob
 }
 
 export async function ReadUser(id: ObjectId): Promise<UserSchema | Error> {
-  const record = await usersCollection.findOne({ _id: new ObjectId(id) }, { projection: { password: 0 } });
+  const record = await UsersCollection.findOne({ _id: new ObjectId(id) }, { projection: { password: 0 } });
 
   return record ? record : Error("Invalid reference");
 }
@@ -40,7 +40,7 @@ export async function UpdateUser(data: UserSchema): Promise<UserSchema | Error> 
     return Error("Invalid reference");
   }
 
-  const result = await usersCollection.updateOne(
+  const result = await UsersCollection.updateOne(
     { _id: new ObjectId(record._id) },
     { $set: data },
   );
@@ -49,5 +49,5 @@ export async function UpdateUser(data: UserSchema): Promise<UserSchema | Error> 
 }
 
 export async function DeleteUser(id: ObjectId): Promise<number> {
-  return await usersCollection.deleteOne({ _id: new ObjectId(id) });
+  return await UsersCollection.deleteOne({ _id: new ObjectId(id) });
 }

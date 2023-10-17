@@ -68,8 +68,7 @@ export function UserRoutes(router: Router) {
     } catch (error) {
       handleTryCatchError(error, context);
     }
-  },
-  );
+  });
 
   router.delete("/api/user/delete/:id", ProtectRoute, async (context: Context) => {
     try {
@@ -86,6 +85,5 @@ export function UserRoutes(router: Router) {
     } catch (error) {
       handleTryCatchError(error, context);
     }
-  },
-  );
+  });
 }
