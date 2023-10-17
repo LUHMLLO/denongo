@@ -3,21 +3,17 @@ import { Context, Status } from "@/deps.ts";
 export function handleResponseSuccess(context: Context, status: number, message: string, data?: unknown): void {
   context.response.status = status;
   context.response.body = {
-    payload: {
-      message: message,
-      status: status,
-      data: data,
-    },
+    message: message,
+    status: status,
+    payload: data,
   };
 }
 
 export function handleResponseError(context: Context, status: number, message: string): void {
   context.response.status = status;
   context.response.body = {
-    payload: {
-      message: message.replace("Error: ", "").trim(),
-      status: status,
-    },
+    message: message.replace("Error: ", "").trim(),
+    status: status,
   };
 }
 

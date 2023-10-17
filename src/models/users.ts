@@ -11,7 +11,7 @@ export interface UserSchema {
 export const usersCollection = db.collection<UserSchema>("users");
 
 export async function AllUsers(): Promise<UserSchema[]> {
-  return await usersCollection.find().toArray();
+  return await usersCollection.find({}, { projection: { password: 0 } }).toArray();
 }
 
 export async function CreateUser(username: string, password: string): Promise<ObjectId | Error> {
@@ -28,7 +28,7 @@ export async function CreateUser(username: string, password: string): Promise<Ob
 }
 
 export async function ReadUser(id: ObjectId): Promise<UserSchema | Error> {
-  const record = await usersCollection.findOne({ _id: new ObjectId(id) });
+  const record = await usersCollection.findOne({ _id: new ObjectId(id) }, { projection: { password: 0 } });
 
   return record ? record : Error("Invalid reference");
 }

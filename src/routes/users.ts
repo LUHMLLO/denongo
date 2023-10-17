@@ -9,8 +9,7 @@ export function UserRoutes(router: Router) {
       const mongoResponse = await AllUsers();
 
       if (mongoResponse.length <= 0) {
-        handleResponseSuccess(context, Status.OK, "Records list is empty", mongoResponse);
-        return;
+        return handleResponseSuccess(context, Status.OK, "Records list is empty", mongoResponse);
       }
 
       handleResponseSuccess(context, Status.OK, `Obtained records list`, mongoResponse);
@@ -26,8 +25,7 @@ export function UserRoutes(router: Router) {
       const mongoResponse = await CreateUser(data.username, data.password.trim());
 
       if (mongoResponse instanceof Error) {
-        handleResponseError(context, Status.BadRequest, mongoResponse.message);
-        return;
+        return handleResponseError(context, Status.BadRequest, mongoResponse.message);
       }
 
       handleResponseSuccess(context, Status.Created, `Created record`, mongoResponse);
@@ -44,8 +42,7 @@ export function UserRoutes(router: Router) {
       const mongoResponse = await ReadUser(paramId);
 
       if (mongoResponse instanceof Error) {
-        handleResponseError(context, Status.NotFound, mongoResponse.message);
-        return;
+        return handleResponseError(context, Status.NotFound, mongoResponse.message);
       }
 
       handleResponseSuccess(context, Status.OK, `Obtained record`, mongoResponse);
@@ -64,8 +61,7 @@ export function UserRoutes(router: Router) {
       const mongoResponse = await UpdateUser({ ...data, _id: paramId });
 
       if (mongoResponse instanceof Error) {
-        handleResponseError(context, Status.BadRequest, mongoResponse.message);
-        return;
+        return handleResponseError(context, Status.BadRequest, mongoResponse.message);
       }
 
       handleResponseSuccess(context, Status.OK, "Updated record", mongoResponse);
@@ -83,8 +79,7 @@ export function UserRoutes(router: Router) {
       const mongoResponse = await DeleteUser(paramId);
 
       if (mongoResponse === 0) {
-        handleResponseError(context, Status.NotFound, "Cannot delete record");
-        return;
+        return handleResponseError(context, Status.NotFound, "Cannot delete record");
       }
 
       handleResponseSuccess(context, Status.Accepted, `Deleted record ${paramId}`);

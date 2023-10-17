@@ -1,7 +1,7 @@
 import { Context, Router, Status } from "@/deps.ts";
 import { Login } from "@/models/auth.ts";
 import { CreateUser, ReadUser } from "@/models/users.ts";
-import { handleTryCatchError } from "@/utils/handlers.ts";
+import { handleResponseError, handleResponseSuccess, handleTryCatchError } from "@/utils/handlers.ts";
 import { ProtectRoute } from "@/utils/jwt.middleware.ts";
 import { CreateJWT } from "@/utils/jwt.ts";
 
@@ -13,13 +13,10 @@ export function AuthRoutes(router: Router) {
       const record = await CreateUser(username, password.trim());
 
       if (record instanceof Error) {
-        context.response.status = Status.BadRequest;
-        context.response.body = { message: record.message };
-        return;
+        return handleResponseError(context, Status.BadRequest, record.message)
       }
 
-      context.response.status = Status.Created;
-      context.response.body = { message: "User created successfully" };
+      handleResponseSuccess(context, Status.Created, 'User created successfully')
     } catch (error) {
       handleTryCatchError(error, context);
     }
@@ -32,16 +29,10 @@ export function AuthRoutes(router: Router) {
       const record = await Login(username, password.trim());
 
       if (record instanceof Error) {
-        context.response.status = Status.BadRequest;
-        context.response.body = { message: record.message };
-        return;
+        return handleResponseError(context, Status.BadRequest, record.message)
       }
 
-      context.response.status = Status.Created;
-      context.response.body = {
-        message: "User logged in",
-        token: await CreateJWT(record!._id),
-      };
+      handleResponseSuccess(context, Status.Created, 'User logged in', { token: await CreateJWT(record!._id) })
     } catch (error) {
       handleTryCatchError(error, context);
     }
@@ -52,13 +43,10 @@ export function AuthRoutes(router: Router) {
       const record = await ReadUser(context.state.token.data);
 
       if (record instanceof Error) {
-        context.response.status = Status.BadRequest;
-        context.response.body = { message: record.message };
-        return;
+        return handleResponseError(context, Status.BadRequest, record.message)
       }
 
-      context.response.status = Status.OK;
-      context.response.body = { data: record };
+      handleResponseSuccess(context, Status.OK, 'Authorized', record)
     } catch (error) {
       handleTryCatchError(error, context);
     }
