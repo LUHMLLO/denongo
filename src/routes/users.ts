@@ -1,7 +1,7 @@
 import { Context, ObjectId, Router, Status } from "@/deps.ts";
-import { AllUsers, CreateUser, DeleteUser, ReadUser, UpdateUser, UserSchema } from "@/models/users.ts";
-import { handleResponseError, handleResponseSuccess, handleTryCatchError } from "@/utils/handlers.ts";
-import { ProtectRoute } from "@/utils/jwt.middleware.ts";
+import { AllUsers, CreateUser, DeleteUser, ReadUser, UpdateUser, UserSchema } from "@models/users.ts";
+import { handleResponseError, handleResponseSuccess, handleTryCatchError } from "@utils/handlers.ts";
+import { ProtectRoute } from "@utils/jwt.middleware.ts";
 
 export function UserRoutes(router: Router) {
   router.get("/api/user/list", ProtectRoute, async (context: Context) => {

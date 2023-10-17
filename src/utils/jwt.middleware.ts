@@ -1,6 +1,6 @@
 import { Context, Status } from "@/deps.ts";
-import { handleResponseError, handleTryCatchError } from "@/utils/handlers.ts";
-import { VerifyJWT } from "@/utils/jwt.ts";
+import { handleResponseError, handleTryCatchError } from "@utils/handlers.ts";
+import { VerifyJWT } from "@utils/jwt.ts";
 
 export async function ProtectRoute(context: Context, next: () => Promise<unknown>): Promise<void> {
   try {

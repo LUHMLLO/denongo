@@ -1,6 +1,9 @@
 {
   "imports": {
-    "@/": "./src/"
+    "@/": "./src/",
+    "@models/": "./src/models/",
+    "@routes/": "./src/routes/",
+    "@utils/": "./src/utils/"
   },
   "tasks": {
     "safe": "deno lint && deno check --all ./src/**/*.ts",

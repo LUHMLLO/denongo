@@ -1,9 +1,9 @@
 import { Context, Router, Status } from "@/deps.ts";
-import { Login } from "@/models/auth.ts";
-import { CreateUser, ReadUser } from "@/models/users.ts";
-import { handleResponseError, handleResponseSuccess, handleTryCatchError } from "@/utils/handlers.ts";
-import { ProtectRoute } from "@/utils/jwt.middleware.ts";
-import { CreateJWT } from "@/utils/jwt.ts";
+import { Login } from "@models/auth.ts";
+import { CreateUser, ReadUser } from "@models/users.ts";
+import { handleResponseError, handleResponseSuccess, handleTryCatchError } from "@utils/handlers.ts";
+import { ProtectRoute } from "@utils/jwt.middleware.ts";
+import { CreateJWT } from "@utils/jwt.ts";
 
 export function AuthRoutes(router: Router) {
   router.post("/api/signup", async (context: Context) => {

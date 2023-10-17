@@ -1,6 +1,6 @@
 import { ObjectId } from "@/deps.ts";
 import db from "@/db.ts";
-import { HashPassword } from "@/utils/encrypt.ts";
+import { HashPassword } from "@utils/encrypt.ts";
 
 export interface UserSchema {
   _id: ObjectId;
