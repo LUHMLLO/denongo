@@ -86,5 +86,4 @@ export function ProfileRoutes(router: Router) {
             handleTryCatchError(error, context);
         }
     });
-
 }
