@@ -7,7 +7,7 @@
   },
   "tasks": {
     "safe": "deno lint && deno check --all ./src/**/*.ts",
-    "start": "deno run --allow-net --allow-write --allow-read --unstable ./src/main.ts"
+    "start": "deno run --allow-net --allow-write --allow-read ./src/main.ts"
   },
   "compilerOptions": {
     "strict": true
